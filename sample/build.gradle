@@ -9,9 +9,11 @@ buildscript {
 apply plugin: 'android'
 
 repositories {
-    mavenCentral()
-    maven { url 'C:/Users/BRIOT Olivier/.m2/repository' }
-    /*mavenLocal()*/
+    mavenLocal()
+    /*mavenCentral()*/
+    /*maven { url 'C:/Users/BRIOT Olivier/.m2/repository' }*/
+    /*maven { url '~/.m2/repository'}*/
+
 }
 
 android {
@@ -33,7 +35,7 @@ android {
 }
 
 dependencies {
-    compile 'com.dejamobile.retailapi:retailapi:1.0.6'
+    compile 'com.dejamobile.retailapi:retailapi:1.0.6@aar'
     /* see http://developer.android.com/tools/support-library/features.html for Android Support libraries */
     compile 'com.android.support:support-v4:18.0.+'
     compile 'com.android.support:appcompat-v7:18.0.0'
