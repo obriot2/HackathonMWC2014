@@ -36,7 +36,15 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/white_body"
                 >
-
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/GetMEHolderId"
+                    android:id="@+id/buttonGetMEHolderId"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:textSize="14sp"
+                    android:layout_gravity="center"
+                    android:onClick="getMEHolderId"/>
 
                 <Button
                     android:layout_width="match_parent"
@@ -52,11 +60,31 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/SetMyLoyaltyData"
-                    android:id="@+id/button6"
+                    android:id="@+id/buttonSetMyLoyaltyData"
                     style="?android:attr/buttonBarButtonStyle"
                     android:textSize="14sp"
                     android:layout_gravity="center"
                     android:onClick="setMyLoyalty"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/GetCustomerId"
+                    android:id="@+id/buttonGetCustomerId"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:textSize="14sp"
+                    android:layout_gravity="center"
+                    android:onClick="getCustomerId"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/SetCustomerId"
+                    android:id="@+id/buttonSetCustomerId"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:textSize="14sp"
+                    android:layout_gravity="center"
+                    android:onClick="setCustomerId"/>
 
                 <Button
                     android:layout_width="match_parent"
@@ -102,11 +130,12 @@
 
             <TextView
                 android:id="@+id/log"
-                style="?android:textAppearanceSmall"
+                android:textSize="14sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
-                android:paddingLeft="16dp"
+                android:minHeight="24dp"
+                android:gravity="center_vertical"
+                android:padding="8dp"
                 />
             </LinearLayout>
         </LinearLayout>

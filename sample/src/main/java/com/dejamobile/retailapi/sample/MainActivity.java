@@ -17,7 +17,9 @@ import android.widget.TextView;
 import com.dejamobile.retailapi.core.RetailAPIManager;
 import com.dejamobile.retailapi.core.Session;
 import com.dejamobile.retailapi.model.BasketItem;
+import com.dejamobile.retailapi.model.CustomerId;
 import com.dejamobile.retailapi.model.Error;
+import com.dejamobile.retailapi.model.MEHolderId;
 import com.dejamobile.retailapi.model.MyBasket;
 import com.dejamobile.retailapi.model.MyLoyalty;
 import com.dejamobile.retailapi.model.ServiceState;
@@ -27,7 +29,7 @@ import com.dejamobile.retailapi.model.ServiceState;
  * @author Olivierr Briot
  *         Date: 08/01/14
  */
-public class MainActivity extends Activity implements RetailAPIManager.onMyLoyaltyListener, RetailAPIManager.onMyBasketListener {
+public class MainActivity extends Activity implements RetailAPIManager.onMyLoyaltyListener, RetailAPIManager.onMyBasketListener, RetailAPIManager.onCustomerIdListener, RetailAPIManager.onMEHolderListener {
 
     private RetailAPIManager retailManager;
     private final static String retailID = "ORI1";
@@ -59,13 +61,13 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
             byte b = getIntent().getByteExtra("com.dejamobile.ACTION",(byte)0xFF);
             switch (b) {
                 case 0 :
-                    popup("Basket successfully read and flushed", "Done");
+                    tLog.setText("Basket successfully read and flushed");
                     break;
                 case 1 :
-                    popup("Empty Basket, please set basket", "Warning");
+                    tLog.setText("Empty Basket, please set basket");
                     break;
                 default:
-                    popup("See you later", "Bye");
+                    tLog.setText("You know who I am. See you later");
             }
 
             setIntent(new Intent("android.intent.action.MAIN"));
@@ -98,38 +100,34 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
                             @Override
                             public void onSessionOpened(Session session) {
                                 s = session;
-                                popup("Session successfully started for retailer " + retailID,"Hello");
-                                tLog.setText(tLog.getText() + "\nSession successfully started for retailer " + retailID);
+                                tLog.setText("Session successfully started for retailer " + retailID);
                             }
 
                             @Override
                             public void onSessionError(com.dejamobile.retailapi.model.Error e) {
-                                popup("bad retailerId","Error");
-                                tLog.setText(tLog.getText() + "\nbad retailerId");
+                                tLog.setText("bad retailerId");
                             }
                         });
                         try {
                             retailManager.doOpenSession(retailID);
                         } catch (Exception e) {
-                            Log.e(TAG, "Exception : " + e.getClass().getName());
+                            tLog.setText("Exception : " + e.getClass().getName());
                         }
                     }
                     else if (state.getState() == ServiceState.UNSUBSCRIBED)
                     {
-                        popup("RetailAPI " + retailID + " is not activated","Error");
-                        tLog.setText(tLog.getText() + "\nRetailAPI " + retailID + " is not activated");
+                        tLog.setText("RetailAPI " + retailID + " is not activated");
                     }
                 }
 
                 @Override
                 public void onServiceStateError(com.dejamobile.retailapi.model.Error e) {
-
+                    tLog.setText("onServiceStateError : " + e.getReason());
                 }
             });
             retailManager.doGetServiceState(retailID);
         } catch (Exception e) {
-            Log.e(TAG, "Exception : " + e.getClass().getName());
-            popup( e.getClass().getName(), "test");
+            tLog.setText("Exception : " + e.getClass().getName());
         }
     }
 
@@ -140,7 +138,7 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
             try {
                 retailManager.closeSession(s);
             } catch (Exception e) {
-                Log.e(TAG, "Exception : " + e.getClass().getName());
+                tLog.setText("Exception : " + e.getClass().getName());
             }
         }
     }
@@ -178,7 +176,7 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
         }
         else
         {
-            Log.w(TAG, "No session");
+            tLog.setText("No session");
         }
     }
 
@@ -192,39 +190,105 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
         }
     }
 
+    public void getCustomerId(View v)
+    {
+        if (s != null)
+        {
+            s.setCustomerIdListener(this);
+            s.doGetCustomerId();
+        }
+        else
+        {
+            tLog.setText("No session");
+        }
+    }
+
+    public void setCustomerId(View v)
+    {
+        CustomerId c = new CustomerId(new byte[] {(byte)0x1f, (byte)0x2f});
+        if (s != null)
+        {
+            s.setCustomerIdListener(this);
+            s.doSetCustomerId(c);
+        }
+    }
+
+    public void getMEHolderId(View v)
+    {
+        if (s != null)
+        {
+            s.setMEHolderIdListener(this);
+            s.doGetMEHolderId();
+        }
+        else
+        {
+            tLog.setText("No session");
+        }
+    }
+
     @Override
     public void onMyBasketRead(MyBasket basket) {
         Log.d(TAG, "onMyBasketWritten");
-        popup("Basket contains " + basket.getItems().size() + " items", "Done");
+        tLog.setText("Basket contains " + basket.getItems().size() + " items");
     }
 
     @Override
     public void onMyBasketWritten() {
         Log.d(TAG, "onMyBasketWritten");
-        popup("Please tap your handset", "Done");
+        tLog.setText("Done, Please tap your handset");
     }
 
     @Override
     public void onMyBasketError(com.dejamobile.retailapi.model.Error e) {
-        Log.e(TAG, "onMyBasketError : "+e.getReason());
+        tLog.setText("onMyBasketError : " + e.getReason());
     }
 
     @Override
     public void onMyLoyaltyRead(MyLoyalty loyaltyCard) {
         Log.d(TAG,"onMyLoyaltyRead : " + loyaltyCard.toString());
-        popup("Loyalty card Id :" + loyaltyCard.toString(), "Done");
+        tLog.setText(loyaltyCard.toString());
     }
 
     @Override
     public void onMyLoyaltyWritten() {
         Log.d(TAG,"onMyLoyaltyWritten");
-        popup("Loyalty card Id has been registered", "Done");
+        tLog.setText("Loyalty card Id has been registered");
     }
 
     @Override
     public void onMyLoyaltyError(Error e) {
-        Log.e(TAG, "onMyLoyaltyError : "+e.getReason());
+        tLog.setText("onMyLoyaltyError : " + e.getReason());
     }
+
+    @Override
+    public void onCustomerIdRead(CustomerId customerId) {
+        Log.d(TAG,"onCustomerId : " + customerId.toString());
+        tLog.setText(customerId.toString());
+    }
+
+    @Override
+    public void onCustomerIdWritten() {
+        Log.d(TAG,"onCustomerIdWritten");
+        tLog.setText("CustomerId has been registered");
+    }
+
+    @Override
+    public void onCustomerIdError(Error error) {
+        tLog.setText("onCustomerIdError : " + error.getReason());
+    }
+
+    @Override
+    public void onMEHolderRead(MEHolderId meHolderId) {
+        Log.d(TAG,"onMEHolderId : " + meHolderId.toString());
+        tLog.setText(meHolderId.toString());
+    }
+
+    @Override
+    public void onMEHolderError(Error error) {
+
+    }
+
+
 
     public void popup(String message, String title)
     {
@@ -245,5 +309,6 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
 
 }

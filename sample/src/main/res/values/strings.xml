@@ -4,8 +4,11 @@
     <string name="app_name">HackathonMWC2014</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="GetMEHolderId">GET MEHOLDER ID</string>
     <string name="GetLoyaltyData">GET LOYALTY CARD ID</string>
     <string name="SetMyLoyaltyData">SET LOYALTY CARD ID</string>
+    <string name="GetCustomerId">GET CUSTOMER ID</string>
+    <string name="SetCustomerId">SET CUSTOMER ID</string>
     <string name="SetBasket">SET BASKET</string>
     <string name="GetBasket">GET BASKET</string>
     <string name="actions">Actions</string>
