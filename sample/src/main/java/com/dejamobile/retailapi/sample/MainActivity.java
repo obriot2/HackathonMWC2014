@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.dejamobile.retailapi.core.RetailAPIManager;
 import com.dejamobile.retailapi.core.Session;
@@ -32,12 +33,13 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
     private final static String retailID = "ORI1";
     public static final String TAG = "Hackathon";
     private Session s;
+    private TextView tLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        tLog = (TextView)findViewById(R.id.log);
     }
 
     @Override
@@ -97,11 +99,13 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
                             public void onSessionOpened(Session session) {
                                 s = session;
                                 popup("Session successfully started for retailer " + retailID,"Hello");
+                                tLog.setText(tLog.getText() + "\nSession successfully started for retailer " + retailID);
                             }
 
                             @Override
                             public void onSessionError(com.dejamobile.retailapi.model.Error e) {
                                 popup("bad retailerId","Error");
+                                tLog.setText(tLog.getText() + "\nbad retailerId");
                             }
                         });
                         try {
@@ -113,6 +117,7 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
                     else if (state.getState() == ServiceState.UNSUBSCRIBED)
                     {
                         popup("RetailAPI " + retailID + " is not activated","Error");
+                        tLog.setText(tLog.getText() + "\nRetailAPI " + retailID + " is not activated");
                     }
                 }
 
@@ -169,7 +174,6 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
         if (s != null)
         {
             s.setLoyaltyCardIdListener(this);
-
             s.doGetLoyaltyCardId();
         }
         else

@@ -9,11 +9,10 @@ buildscript {
 apply plugin: 'android'
 
 repositories {
-    mavenLocal()
-    /*mavenCentral()*/
-    /*maven { url 'C:/Users/BRIOT Olivier/.m2/repository' }*/
-    /*maven { url '~/.m2/repository'}*/
-
+    //mavenLocal()
+    //mavenCentral()
+    /* https://oss.sonatype.org/content/repositories/central_bundles-1718/ */
+    maven { url 'https://oss.sonatype.org/content/repositories/central_bundles-1718/' }
 }
 
 android {

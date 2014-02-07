@@ -8,5 +8,7 @@
     <string name="SetMyLoyaltyData">SET LOYALTY CARD ID</string>
     <string name="SetBasket">SET BASKET</string>
     <string name="GetBasket">GET BASKET</string>
+    <string name="actions">Actions</string>
+    <string name="results">Results</string>
 
 </resources>

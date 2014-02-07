@@ -4,13 +4,91 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin">
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@color/background">
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <TextView
+                style="?android:listSeparatorTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:text="@string/actions"
+                android:background="#B52112"
+                android:textColor="@android:color/white"/>
+
+
+            <LinearLayout
+                android:id="@+id/second"
+                android:divider="?android:dividerHorizontal"
+                android:dividerPadding="8dp"
+                android:orientation="vertical"
+                android:showDividers="middle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/white_body"
+                >
+
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/GetLoyaltyData"
+                    android:id="@+id/button5"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:textSize="14sp"
+                    android:layout_gravity="center"
+                    android:onClick="getLoyaltyData"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/SetMyLoyaltyData"
+                    android:id="@+id/button6"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:textSize="14sp"
+                    android:layout_gravity="center"
+                    android:onClick="setMyLoyalty"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/SetBasket"
+                    android:id="@+id/button8"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:textSize="14sp"
+                    android:layout_gravity="center"
+                    android:onClick="setBasket"/>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/GetBasket"
+                    android:id="@+id/button9"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:textSize="14sp"
+                    android:layout_gravity="center"
+                    android:onClick="getBasket"/>
+
+
+            </LinearLayout>
+
+            <TextView
+                style="?android:listSeparatorTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_height="24dp"
+                android:text="@string/results"
+                android:background="#B52112"
+                android:textColor="@android:color/white"/>
+
         <LinearLayout
             android:id="@+id/second"
             android:divider="?android:dividerHorizontal"
@@ -19,44 +97,18 @@
             android:showDividers="middle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/white_body"
             >
 
-            <Button
+            <TextView
+                android:id="@+id/log"
+                style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/GetLoyaltyData"
-                android:id="@+id/button5"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_gravity="center"
-                android:onClick="getLoyaltyData"/>
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/SetMyLoyaltyData"
-                android:id="@+id/button6"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_gravity="center"
-                android:onClick="setMyLoyalty"/>
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/SetBasket"
-                android:id="@+id/button8"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_gravity="center"
-                android:onClick="setBasket"/>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/GetBasket"
-                android:id="@+id/button9"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_gravity="center"
-                android:onClick="getBasket"/>
-
-
+                android:paddingLeft="16dp"
+                />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
