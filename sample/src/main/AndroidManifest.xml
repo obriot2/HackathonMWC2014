@@ -7,6 +7,8 @@
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +27,15 @@
             <intent-filter>
                 <action android:name="com.dejamobile.PUSHORI1" />
                 <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="dejamobile.com"
+                    android:pathPrefix="/mwc14"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
     </application>

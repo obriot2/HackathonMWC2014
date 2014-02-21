@@ -9,9 +9,6 @@ buildscript {
 apply plugin: 'android'
 
 repositories {
-    //mavenLocal()
-    //mavenCentral()
-    /* https://oss.sonatype.org/content/repositories/central_bundles-1718/ */
     maven { url 'https://oss.sonatype.org/content/repositories/central_bundles-1718/' }
 }
 
@@ -22,13 +19,12 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 18
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
     }
     buildTypes {
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
         }
     }
 }

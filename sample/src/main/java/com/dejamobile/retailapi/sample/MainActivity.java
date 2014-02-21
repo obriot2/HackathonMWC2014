@@ -7,11 +7,16 @@ package com.dejamobile.retailapi.sample;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.dejamobile.retailapi.core.RetailAPIManager;
@@ -36,10 +41,15 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
     public static final String TAG = "Hackathon";
     private Session s;
     private TextView tLog;
+    private final static int FIELD_SIZE = 32;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         setContentView(R.layout.activity_main);
         tLog = (TextView)findViewById(R.id.log);
     }
@@ -56,21 +66,74 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
 
         OpenOrReopenSession();
 
-        if (getIntent().getAction().equals("com.dejamobile.PUSH"+retailID))
-        {
-            byte b = getIntent().getByteExtra("com.dejamobile.ACTION",(byte)0xFF);
-            switch (b) {
-                case 0 :
-                    tLog.setText("Basket successfully read and flushed");
-                    break;
-                case 1 :
-                    tLog.setText("Empty Basket, please set basket");
-                    break;
-                default:
-                    tLog.setText("You know who I am. See you later");
-            }
+        if ((getIntent().getAction() != null)) {
 
-            setIntent(new Intent("android.intent.action.MAIN"));
+            if (getIntent().getAction().equals("android.nfc.action.NDEF_DISCOVERED")) {
+
+                String sPath = getIntent().getData().getPath();
+                // Get instance of Vibrator from current Context
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(100);
+
+                if (sPath.equals("/mwc14/"))
+                {
+
+                    Uri u = Uri.parse(this.getIntent().getDataString());
+
+                    String customerId = u.getQueryParameter("cid");
+                    String myLoyalty = u.getQueryParameter("lid");
+
+                    if ((customerId != null) && (!customerId.isEmpty()))
+                    {
+                        byte[] buffer = new byte[FIELD_SIZE];
+                        System.arraycopy(customerId.getBytes(),0,buffer,0,customerId.getBytes().length);
+                        CustomerId c = new CustomerId(buffer);
+                        if (s != null)
+                        {
+                            setProgressBarIndeterminateVisibility(true);
+                            s.setCustomerIdListener(this);
+                            s.doSetCustomerId(c);
+                        }
+                        else
+                        {
+                            tLog.setText("No session");
+                        }
+                    }
+                    if ((myLoyalty != null) && (!myLoyalty.isEmpty()))
+                    {
+                        byte[] buffer = new byte[FIELD_SIZE];
+                        System.arraycopy(myLoyalty.getBytes(),0,buffer,0,myLoyalty.getBytes().length);
+                        MyLoyalty m = new MyLoyalty(buffer);
+                        if (s != null)
+                        {
+                            setProgressBarIndeterminateVisibility(true);
+                            s.setLoyaltyCardIdListener(this);
+                            s.doSetLoyaltyCardId(m);
+                        }
+                        else
+                        {
+                            tLog.setText("No session");
+                        }
+                    }
+                }
+                setIntent(new Intent("android.intent.action.MAIN"));
+            }
+            else if (getIntent().getAction().equals("com.dejamobile.PUSH"+retailID))
+            {
+                byte b = getIntent().getByteExtra("com.dejamobile.ACTION",(byte)0xFF);
+                switch (b) {
+                    case 0 :
+                        tLog.setText("Basket successfully read and flushed");
+                        break;
+                    case 1 :
+                        tLog.setText("Empty Basket, please set basket");
+                        break;
+                    default:
+                        tLog.setText("You know who I am. See you later");
+                }
+
+                setIntent(new Intent("android.intent.action.MAIN"));
+            }
         }
     }
 
@@ -90,6 +153,7 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
 
     private void OpenOrReopenSession()
     {
+        setProgressBarIndeterminateVisibility(true);
         try {
             retailManager.setServiceStateListener(new RetailAPIManager.onServiceStateListener() {
                 @Override
@@ -101,11 +165,13 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
                             public void onSessionOpened(Session session) {
                                 s = session;
                                 tLog.setText("Session successfully started for retailer " + retailID);
+                                setProgressBarIndeterminateVisibility(false);
                             }
 
                             @Override
                             public void onSessionError(com.dejamobile.retailapi.model.Error e) {
                                 tLog.setText("bad retailerId");
+                                setProgressBarIndeterminateVisibility(false);
                             }
                         });
                         try {
@@ -117,6 +183,7 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
                     else if (state.getState() == ServiceState.UNSUBSCRIBED)
                     {
                         tLog.setText("RetailAPI " + retailID + " is not activated");
+                        setProgressBarIndeterminateVisibility(false);
                     }
                 }
 
@@ -153,6 +220,7 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
 
         if (s != null)
         {
+            setProgressBarIndeterminateVisibility(true);
             s.setBasketListener(this);
             s.doSetBasket(b);
         }
@@ -162,6 +230,7 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
     {
         if (s != null)
         {
+            setProgressBarIndeterminateVisibility(true);
             s.setBasketListener(this);
             s.doGetBasket();
         }
@@ -171,6 +240,7 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
     {
         if (s != null)
         {
+            setProgressBarIndeterminateVisibility(true);
             s.setLoyaltyCardIdListener(this);
             s.doGetLoyaltyCardId();
         }
@@ -182,9 +252,12 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
 
     public void setMyLoyalty(View v)
     {
-        MyLoyalty m = new MyLoyalty(new byte[] {(byte)0x01, (byte)0x02});
+        byte[] buffer = new byte[FIELD_SIZE];
+        System.arraycopy(new byte[] {(byte)0x01, (byte)0x02},0,buffer,0,2);
+        MyLoyalty m = new MyLoyalty(buffer);
         if (s != null)
         {
+            setProgressBarIndeterminateVisibility(true);
             s.setLoyaltyCardIdListener(this);
             s.doSetLoyaltyCardId(m);
         }
@@ -194,6 +267,7 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
     {
         if (s != null)
         {
+            setProgressBarIndeterminateVisibility(true);
             s.setCustomerIdListener(this);
             s.doGetCustomerId();
         }
@@ -205,9 +279,12 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
 
     public void setCustomerId(View v)
     {
-        CustomerId c = new CustomerId(new byte[] {(byte)0x1f, (byte)0x2f});
+        byte[] buffer = new byte[FIELD_SIZE];
+        System.arraycopy(new byte[] {(byte)0x1f, (byte)0x2f},0,buffer,0,2);
+        CustomerId c = new CustomerId(buffer);
         if (s != null)
         {
+            setProgressBarIndeterminateVisibility(true);
             s.setCustomerIdListener(this);
             s.doSetCustomerId(c);
         }
@@ -217,6 +294,7 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
     {
         if (s != null)
         {
+            setProgressBarIndeterminateVisibility(true);
             s.setMEHolderIdListener(this);
             s.doGetMEHolderId();
         }
@@ -230,62 +308,72 @@ public class MainActivity extends Activity implements RetailAPIManager.onMyLoyal
     public void onMyBasketRead(MyBasket basket) {
         Log.d(TAG, "onMyBasketWritten");
         tLog.setText("Basket contains " + basket.getItems().size() + " items");
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
     public void onMyBasketWritten() {
         Log.d(TAG, "onMyBasketWritten");
         tLog.setText("Done, Please tap your handset");
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
     public void onMyBasketError(com.dejamobile.retailapi.model.Error e) {
         tLog.setText("onMyBasketError : " + e.getReason());
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
     public void onMyLoyaltyRead(MyLoyalty loyaltyCard) {
         Log.d(TAG,"onMyLoyaltyRead : " + loyaltyCard.toString());
         tLog.setText(loyaltyCard.toString());
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
     public void onMyLoyaltyWritten() {
         Log.d(TAG,"onMyLoyaltyWritten");
         tLog.setText("Loyalty card Id has been registered");
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
     public void onMyLoyaltyError(Error e) {
         tLog.setText("onMyLoyaltyError : " + e.getReason());
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
     public void onCustomerIdRead(CustomerId customerId) {
         Log.d(TAG,"onCustomerId : " + customerId.toString());
         tLog.setText(customerId.toString());
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
     public void onCustomerIdWritten() {
         Log.d(TAG,"onCustomerIdWritten");
         tLog.setText("CustomerId has been registered");
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
     public void onCustomerIdError(Error error) {
         tLog.setText("onCustomerIdError : " + error.getReason());
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
     public void onMEHolderRead(MEHolderId meHolderId) {
         Log.d(TAG,"onMEHolderId : " + meHolderId.toString());
         tLog.setText(meHolderId.toString());
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
     public void onMEHolderError(Error error) {
-
+        setProgressBarIndeterminateVisibility(false);
     }
 
 
