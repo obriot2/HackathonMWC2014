@@ -118,7 +118,7 @@
                 android:textColor="@android:color/white"/>
 
         <LinearLayout
-            android:id="@+id/second"
+            android:id="@+id/third"
             android:divider="?android:dividerHorizontal"
             android:dividerPadding="8dp"
             android:orientation="vertical"
